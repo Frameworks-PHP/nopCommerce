@@ -6161,7 +6161,8 @@ namespace Nop.Services.Installation
                 HideShippingTotal = false,
                 ReturnValidOptionsIfThereAreAny = true,
                 BypassShippingMethodSelectionIfOnlyOne = false,
-                UseCubeRootMethod = true
+                UseCubeRootMethod = true,
+                ConsiderAssociatedProductsDimensions = true
             });
 
             settingService.SaveSetting(new PaymentSettings

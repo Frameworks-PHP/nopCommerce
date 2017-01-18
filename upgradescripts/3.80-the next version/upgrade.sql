@@ -1306,7 +1306,13 @@ set @resources='
   </LocaleResource>  
   <LocaleResource Name="Admin.ReturnRequests.SearchStartDate.Hint">
     <Value>The start date for the search.</Value>
-  </LocaleResource>   
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Shipping.ConsiderAssociatedProductsDimensions">
+    <Value>Consider associated products dimensions and weight</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Shipping.ConsiderAssociatedProductsDimensions.Hint">
+    <Value>Check to consider associated products dimensions and weight on shipping, uncheck for example if the main product already includes them.</Value>
+  </LocaleResource>
 </Language>
 '
 
@@ -3617,4 +3623,12 @@ GO
 UPDATE [Setting] 
 SET [Name] = N'tax.taxprovider.fixedorbycountrystatezip.taxcategoryid' + SUBSTRING(name, 40, len(name))
 WHERE [Name] like N'tax.taxprovider.fixedrate.taxcategoryid%'
+GO
+
+ --new setting
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'shippingsettings.considerassociatedproductsdimensions')
+BEGIN
+    INSERT [Setting] ([Name], [Value], [StoreId])
+    VALUES (N'shippingsettings.considerassociatedproductsdimensions', N'True', 0)
+END
 GO

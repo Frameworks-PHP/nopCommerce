@@ -437,7 +437,7 @@ namespace Nop.Services.Shipping
 
             //attribute weight
             decimal attributesTotalWeight = decimal.Zero;
-            if (!String.IsNullOrEmpty(shoppingCartItem.AttributesXml))
+            if (_shippingSettings.ConsiderAssociatedProductsDimensions && !String.IsNullOrEmpty(shoppingCartItem.AttributesXml))
             {
                 var attributeValues = _productAttributeParser.ParseProductAttributeValues(shoppingCartItem.AttributesXml);
                 foreach (var attributeValue in attributeValues)
@@ -515,6 +515,10 @@ namespace Nop.Services.Shipping
 
             width = length = height = decimal.Zero;
 
+            //don't consider associated products dimensions
+            if (!_shippingSettings.ConsiderAssociatedProductsDimensions)
+                return;
+
             //attributes
             if (String.IsNullOrEmpty(shoppingCartItem.AttributesXml))
                 return;
@@ -564,7 +568,7 @@ namespace Nop.Services.Shipping
                         packageItem.ShoppingCartItem.Product.Length * packageItem.ShoppingCartItem.Product.Height;
 
                     //associated products volume
-                    if (!string.IsNullOrEmpty(packageItem.ShoppingCartItem.AttributesXml))
+                    if (_shippingSettings.ConsiderAssociatedProductsDimensions && !string.IsNullOrEmpty(packageItem.ShoppingCartItem.AttributesXml))
                     {
                         productVolume += _productAttributeParser.ParseProductAttributeValues(packageItem.ShoppingCartItem.AttributesXml)
                             .Where(attributeValue => attributeValue.AttributeValueType == AttributeValueType.AssociatedToProduct).Sum(attributeValue =>
@@ -587,7 +591,7 @@ namespace Nop.Services.Shipping
                 });
 
                 //set dimensions as cube root of volume
-                length = width = height = Convert.ToDecimal(Math.Pow(Convert.ToDouble(totalVolume), (1.0 / 3.0)));
+                width = length = height = Convert.ToDecimal(Math.Pow(Convert.ToDouble(totalVolume), (1.0 / 3.0)));
 
                 //sometimes we have products with sizes like 1x1x20
                 //that's why let's ensure that a maximum dimension is always preserved
